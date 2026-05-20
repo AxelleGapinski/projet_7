@@ -10,11 +10,11 @@ from sentence_transformers import SentenceTransformer
 
 ### CONFIG
 
-# Configuration des logs
+# configuration des logs
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# URL de l’API
+# URL API
 BASE_URL = (
     "https://public.opendatasoft.com/api/explore/v2.1"
     "/catalog/datasets/evenements-publics-openagenda/records"
