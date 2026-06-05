@@ -21,7 +21,7 @@ BASE_URL = (
 )
 
 # département ciblé
-DEPARTEMENT = "Indre"
+DEPARTEMENT = "Gironde"
 
 # Dossier de sauvegarde
 DATA_DIR = Path("data")
@@ -76,6 +76,10 @@ def fetch_events(department: str = DEPARTEMENT) -> list[dict]:
 
         # ajout des résultats
         all_records.extend(results)
+        
+        #ci apres, limite pour test, à supprimer pour récupérer tous les événements
+        if len(all_records) >= 100:
+            break
 
         offset += 100
 
@@ -284,7 +288,6 @@ def chunk_events(df: pd.DataFrame) -> pd.DataFrame:
 
 
 ## GENERATION DES EMBEDDINGS
-
 def vectorize(df: pd.DataFrame) -> pd.DataFrame:
     """
     Génère les embeddings des événements
@@ -345,24 +348,23 @@ def save(df: pd.DataFrame):
             indent=2
         )
 
-    logger.info("Sauvegardé dans %s", DATA_DIR)
+    logger.info("sauvegardé dans %s", DATA_DIR)
 
 
 ## PIPELINE
-
 if __name__ == "__main__":
 
-    # 1  = Récupération des événements
-    raw = fetch_events()
+    # Récupération des événements
+    raw = fetch_events()[:100] # modif, 100 premiers pour test
 
-    # 2 = Nettoyage et structuration
+    # Nettoyage et structuration des events
     df = clean_events(raw)
 
-    # 3= Chunking
+    # Chunking
     df = chunk_events(df)
 
-    # 4 = Génération des embeddings
+    #Génération des embeddings
     df = vectorize(df)
 
-    # 5 = Sauvegarde
+    # Sauvegarde
     save(df)
