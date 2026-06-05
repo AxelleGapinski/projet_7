@@ -6,19 +6,19 @@ POC d'un chatbot RAG capable de répondre à des questions sur les événements 
 
 ## Table des matières
  
-- [Installation & lancement rapide](#installation--lancement-rapide)
+- [Installation](#installation)
 - [Endpoints API](#endpoints-api)
 - [Docker](#docker)
 - [Tests](#tests)
-- [Comment ça marche](#comment-ça-marche)
+- [Le projet](#le-projet)
 - [Données](#données)
-- [Modèles & choix techniques](#modèles--choix-techniques)
+- [Modèles & choix techniques](#modèles)
 - [Base vectorielle FAISS](#base-vectorielle-faiss)
-- [Évaluation du système](#évaluation-du-système)
-- [Bilan & perspectives](#bilan--perspectives)
+- [Évaluation du système](#evaluation-du-système)
+- [Bilan et perspectives](#bilan--perspectives)
 
 ---
-# Partie 1 — Utiliser le projet
+# Partie 1 : Installation
 
 ### Prérequis
 
@@ -149,7 +149,7 @@ python api_test.py
 ---
 
 
-# Partie 2 — Le projet
+# Partie 2 : Le projet
 
 
 ## Objectifs du projet
