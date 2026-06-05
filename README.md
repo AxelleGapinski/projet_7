@@ -6,17 +6,16 @@ POC d'un chatbot RAG capable de répondre à des questions sur les événements 
 
 ## Table des matières
  
-- [Installation](#installation)
+- [Installation et utilisation](#partie-1--installation)
 - [Endpoints API](#endpoints-api)
 - [Docker](#docker)
 - [Tests](#tests)
-- [Le projet](#le-projet)
+- [Le projet, explications](#partie-2--le-projet)
 - [Données](#données)
-- [Modèles & choix techniques](#modèles)
-- [Base vectorielle FAISS](#base-vectorielle-faiss)
+- [Modèles & choix techniques](#modèleslibs-utilisés)
+- [Base vectorielle FAISS](#base-vectorielle)
 - [Évaluation du système](#evaluation-du-système)
-- [Bilan et perspectives](#bilan--perspectives)
-
+- [Bilan et perspectives](#bilan-et-perspectives)
 ---
 # Partie 1 : Installation
 
