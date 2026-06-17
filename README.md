@@ -1,4 +1,4 @@
-# "Puls-Events" : Chatbot RAG de recommandation culturelle
+# Chatbot RAG de recommandation culturelle
 
 POC d'un chatbot RAG capable de répondre à des questions sur les événements culturels locaux en s'appuyant sur un système combinant LangChain, FAISS et Mistral.
 
@@ -13,7 +13,6 @@ POC d'un chatbot RAG capable de répondre à des questions sur les événements 
 - [Le projet, explications](#partie-2--le-projet)
 - [Données](#données)
 - [Modèles & choix techniques](#modèleslibs-utilisés)
-- [Base vectorielle FAISS](#base-vectorielle)
 - [Évaluation du système](#evaluation-du-système)
 - [Bilan et perspectives](#bilan-et-perspectives)
 ---
