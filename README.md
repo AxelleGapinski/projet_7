@@ -173,7 +173,7 @@ import requests
 
 response = requests.post("http://localhost:8000/ask", json={
     "question": "y a-t-il des concerts ce mois-ci?",
-    "top_k": 5
+    "top_k": 10
 })
 print(response.json())
 ```
