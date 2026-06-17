@@ -1,4 +1,7 @@
-/venv
 .env
-
 data/
+index/
+venv/
+__pycache__/
+*.pyc
+*.pyo
