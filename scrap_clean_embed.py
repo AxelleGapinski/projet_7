@@ -76,10 +76,6 @@ def fetch_events(department: str = DEPARTEMENT) -> list[dict]:
 
         # ajout des résultats
         all_records.extend(results)
-        
-        #ci apres, limite pour test, à supprimer pour récupérer tous les événements
-        if len(all_records) >= 100:
-            break
 
         offset += 100
 
@@ -355,7 +351,7 @@ def save(df: pd.DataFrame):
 if __name__ == "__main__":
 
     # Récupération des événements
-    raw = fetch_events()[:100] # modif, 100 premiers pour test
+    raw = fetch_events()[:5000] # modif, 100 premiers pour test
 
     # Nettoyage et structuration des events
     df = clean_events(raw)

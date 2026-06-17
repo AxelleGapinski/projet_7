@@ -5,11 +5,14 @@ from pathlib import Path
 from langchain_community.vectorstores import FAISS as LangchainFAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
+import numpy as np
+import faiss
+from langchain_community.docstore.in_memory import InMemoryDocstore
 
 DATA_DIR = Path("data")
 INDEX_DIR = Path("index")
 
-# le modèle d'embedding chargé une seule fois au démarrage du script
+# modèle d'embeddings
 embedder = HuggingFaceEmbeddings(
     model_name="Qwen/Qwen3-Embedding-0.6B",
     model_kwargs={"trust_remote_code": True},
@@ -19,8 +22,8 @@ embedder = HuggingFaceEmbeddings(
 
 def build_index(json_path: str = DATA_DIR / "events.json"):
     """
-    Construit l'index FAISS au format LangChain depuis events.json.
-    à relancer si les données changent.
+    Construit l'index FAISS au format LangChain depuis events.json
+    à relancer si les données changent
     """
 
     INDEX_DIR.mkdir(exist_ok=True)
@@ -28,11 +31,17 @@ def build_index(json_path: str = DATA_DIR / "events.json"):
     with open(json_path, "r", encoding="utf-8") as f:
         records = json.load(f)
 
-    # on convertit chaque chunk en Document LangChain
-    # page_content = le texte qui sera vectorisé
-    # metadata = les infos qu'on veut récupérer dans les résultats
-    documents = [
-        Document(
+    # on récupère les vecteurs déjà calculés — pas de re-vectorisation
+    embeddings_matrix = np.array([r["embedding"] for r in records], dtype="float32")
+    dim = embeddings_matrix.shape[1]
+
+    # construction de l'index FAISS brut
+    index = faiss.IndexFlatIP(dim)
+    index.add(embeddings_matrix)
+
+    # création des Documents LangChain pour les métadonnées
+    documents = {
+        i: Document(
             page_content=r["text_for_embedding"],
             metadata={
                 "title": r["title"],
@@ -42,25 +51,25 @@ def build_index(json_path: str = DATA_DIR / "events.json"):
                 "description": r["description"],
             }
         )
-        for r in records
-    ]
+        for i, r in enumerate(records)
+    }
 
-    # LangChain vectorise les documents et construit l'index FAISS en une ligne
-    print("Début de construction de l'index FAISS avec LangChain")
-    vectorstore = LangchainFAISS.from_documents(documents, embedder)
-    print("FAISS ok")
+    # on assemble le vectorstore LangChain manuellement
+    vectorstore = LangchainFAISS(
+        embedding_function=embedder,
+        index=index,
+        docstore=InMemoryDocstore(documents),
+        index_to_docstore_id={i: i for i in range(len(records))}
+    )
 
-    # sauvegarde sur disque (crée index.faiss + index.pkl dans index/)
     vectorstore.save_local(str(INDEX_DIR))
-    print("index sauvegardé sur le disque")
-
-    print(f"Index créé : {len(documents)} chunks")
+    print(f"Index créé : {len(records)} chunks")
     return vectorstore
 
 
 def load_index():
     """
-    Charge l'index depuis le disque.
+    Charge l'index depuis le disque
     À utiliser dans l'API pour ne pas reconstruire l'index à chaque requête.
     """
     return LangchainFAISS.load_local(
