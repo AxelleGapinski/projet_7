@@ -58,7 +58,7 @@ Récupère les événements du département configuré (`DEPARTEMENT` dans `pyth
 
 Pour changer de département, modifier la variable `DEPARTEMENT` dans `scrap_clean_embed.py` :
 ```python
-DEPARTEMENT = "Indre"
+DEPARTEMENT = "Gironde"
 ```
 
 ### 2. Construction de l'index FAISS
