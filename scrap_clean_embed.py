@@ -9,7 +9,6 @@ import requests
 from sentence_transformers import SentenceTransformer
 
 ### CONFIG
-
 # configuration des logs
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -23,11 +22,10 @@ BASE_URL = (
 # département ciblé
 DEPARTEMENT = "Gironde"
 
-# Dossier de sauvegarde
+#dossier de sauvegarde
 DATA_DIR = Path("data")
 
-# Modèle embeddings
-# QWEN car gratuit et bon en multilingue
+# Modèle embeddings= qwen
 MODEL = SentenceTransformer(
     "Qwen/Qwen3-Embedding-0.6B",
     trust_remote_code=True
@@ -47,7 +45,7 @@ def fetch_events(department: str = DEPARTEMENT) -> list[dict]:
     # date limite: événements des 12 derniers mois
     date_limit = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")
 
-    # Filtre utilisé dans la requête API
+    # filtre utilisé dans la requête API
     where = (
         f'location_department="{department}" '
         f'AND lastdate_begin>="{date_limit}"'
@@ -70,17 +68,15 @@ def fetch_events(department: str = DEPARTEMENT) -> list[dict]:
 
         results = data.get("results", [])
 
-        # arrêt si aucun résultat
         if not results:
             break
 
-        # ajout des résultats
         all_records.extend(results)
 
         offset += 100
 
         logger.info(
-            "Récupérés: %d / %s",
+            "récupérés: %d / %s",
             len(all_records),
             data.get("total_count", "?")
         )
@@ -92,7 +88,7 @@ def fetch_events(department: str = DEPARTEMENT) -> list[dict]:
     return all_records
 
 
-## NETTOYAGE DES DONNEES
+## NETTOYAGE DONNEES
 
 def clean_html(text: str | None) -> str:
     """
@@ -101,21 +97,15 @@ def clean_html(text: str | None) -> str:
     - convertir les caractères spéciaux
     - supprimer espaces multiples
 
-    Args: text (str | None): Texte brut
-
+    Args: text (str | None): texte brut
     Returns: str: Texte nettoyé
     """
 
     if not text:
         return ""
 
-    # Suppression des balises HTML
     text = re.sub(r"<[^>]+>", " ", text)
-
-    # Conversion des caractères HTML spéciaux
     text = unescape(text)
-
-    # suppression des espaces multiples
     text = re.sub(r"\s+", " ", text)
 
     return text.strip()
@@ -127,7 +117,6 @@ def parse(record: dict) -> dict:
 
     Args:
         record (dict): Événement brut provenant de l’API
-
     Returns:
         dict: événement nettoyé et structuré
     """
@@ -155,7 +144,7 @@ def parse(record: dict) -> dict:
         )
     )
 
-    # Mots-clés
+    # Mots- clés
     keywords = ", ".join(record.get("keywords_fr") or [])
 
     # texte concaténé utilisé comme entrée pour être transformé en embeddings
@@ -198,7 +187,6 @@ def clean_events(raw: list[dict]) -> pd.DataFrame:
 
     Args:
         raw (list[dict]): liste des événements bruts
-
     Returns:
         pd.DataFrame: df nettoyé
     """
@@ -228,7 +216,6 @@ def chunk_text(text: str, max_chars: int = 500, overlap: int = 50) -> list[str]:
         text: texte à découper
         max_chars: Taille max chunk (en caracteres)
         overlap: taille overlap entre chunks
-
     Returns:
         list[str]: liste de chunks
     """
@@ -240,8 +227,6 @@ def chunk_text(text: str, max_chars: int = 500, overlap: int = 50) -> list[str]:
 
     while start < len(text):
         end = start + max_chars
-
-        # couper sur un espace si possible
         if end < len(text):
             cut = text.rfind(" ", start, end)
             if cut != -1:
@@ -283,19 +268,17 @@ def chunk_events(df: pd.DataFrame) -> pd.DataFrame:
     return df_chunked
 
 
-## GENERATION DES EMBEDDINGS
+## GENERATION EMBEDDINGS
 def vectorize(df: pd.DataFrame) -> pd.DataFrame:
     """
     Génère les embeddings des événements
-
     Args:
         df (pd.DataFrame): df contenant les textes
-
     Returns:
         pd.DataFrame: df avec une colonne embedding ajoutée
     """
 
-    logger.info("Vectorisation lancée avec Qwen3-Embedding.........")
+    logger.info("Vectorisation lancée avec qwen3-embedding.........")
 
     # génération des vecteurs embeddings
     embeddings = MODEL.encode(
@@ -349,18 +332,8 @@ def save(df: pd.DataFrame):
 
 ## PIPELINE
 if __name__ == "__main__":
-
-    # Récupération des événements
-    raw = fetch_events()[:5000] # modif, 100 premiers pour test
-
-    # Nettoyage et structuration des events
+    raw = fetch_events()[:5000] # modif, 5000 premiers pour test
     df = clean_events(raw)
-
-    # Chunking
     df = chunk_events(df)
-
-    #Génération des embeddings
     df = vectorize(df)
-
-    # Sauvegarde
     save(df)
