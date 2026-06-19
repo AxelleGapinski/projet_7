@@ -1,5 +1,4 @@
 import json
-import pickle
 import pandas as pd
 from pathlib import Path
 from langchain_community.vectorstores import FAISS as LangchainFAISS
@@ -31,11 +30,11 @@ def build_index(json_path: str = DATA_DIR / "events.json"):
     with open(json_path, "r", encoding="utf-8") as f:
         records = json.load(f)
 
-    # on récupère les vecteurs déjà calculés — pas de re-vectorisation
+    # on récupère les vecteurs déjà calculés.pas de re-vectorisation
     embeddings_matrix = np.array([r["embedding"] for r in records], dtype="float32")
     dim = embeddings_matrix.shape[1]
 
-    # construction de l'index FAISS brut
+    # construction de l'index FAISS
     index = faiss.IndexFlatIP(dim)
     index.add(embeddings_matrix)
 
@@ -54,7 +53,7 @@ def build_index(json_path: str = DATA_DIR / "events.json"):
         for i, r in enumerate(records)
     }
 
-    # on assemble le vectorstore LangChain manuellement
+    #assemble le vectorstore LangChain
     vectorstore = LangchainFAISS(
         embedding_function=embedder,
         index=index,
@@ -63,14 +62,13 @@ def build_index(json_path: str = DATA_DIR / "events.json"):
     )
 
     vectorstore.save_local(str(INDEX_DIR))
-    print(f"Index créé : {len(records)} chunks")
+    print(f"Index créé: {len(records)} chunks")
     return vectorstore
 
 
 def load_index():
     """
-    Charge l'index depuis le disque
-    À utiliser dans l'API pour ne pas reconstruire l'index à chaque requête.
+    Charge l'index depuis le disque (a utiliser dans l'API pour ne pas reconstruire l'index à chaque requête)
     """
     return LangchainFAISS.load_local(
         str(INDEX_DIR),
@@ -79,14 +77,13 @@ def load_index():
     )
 
 
-def search(query: str, vectorstore, top_k: int = 5):
+def search(query: str, vectorstore, top_k: int = 10):
     """
-    Recherche les chunks les plus similaires à une question texte.
-    Prend directement le texte de la question (plus besoin de vectoriser manuellement).
-
+    Recherche les chunks les plus similaires à une question texte
+    Prend directement le texte de la question
     Returns: liste de dicts avec score + métadonnées
     """
-    # similarity_search_with_score retourne des tuples (Document, score)
+    #retourne des tuples (Document, score)
     results = vectorstore.similarity_search_with_score(query, k=top_k)
 
     return [
