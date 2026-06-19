@@ -89,9 +89,9 @@ python api_test.py
 
 ```
 projet_7/
-├── scrap_clean_embed.py          # Scraping Open Agenda, nettoyage, chunking, embeddings
+├── scrap_clean_embed.py          # scraping Open Agenda, nettoyage, chunking, embeddings
 ├── index_faiss.py    # Construction de l'index FAISS
-├── rag_langchain.py    # Chaîne RAG : LangChain + Mistral
+├── rag_langchain.py    # RAG: LangChain + Mistral
 ├── api.py      # API FastAPI 
 ├── tests/
 │   ├── test_pipeline.py  # Tests unitaires
@@ -99,8 +99,12 @@ projet_7/
 ├── data/
 │   └── events.json     # events scrappés et vectorisés
 ├── index/
-│   ├── index.faiss     # Index vectoriel FAISS
-│   └── index.pkl       # Métadonnées
+│   ├── index.faiss   # index vectoriel FAISS
+│   └── index.pkl    # métadonnées
+├── evaluation/
+│   ├── evaluate_rag.py     # script évaluation jeu de test
+│   ├── test_dataset.json    #jeu de test
+│   └── results.csv   # résultat évaluation
 ├── .env                
 ├── .gitignore
 ├── requirements.txt
@@ -262,20 +266,30 @@ Chaque chunk est converti en `Document` LangChain (texte + métadonnées), puis 
 
 ## Evaluation du système
 
-- *Jeu de test annoté* :
-    ○	15 paires question/réponse couvrant différentes catégories
-    ○ Voir `evaluation\event_15.json`.
- 
-- *Méthode d'annotation* : manuelle, à partir des données réelles d'`events.json`.
+Script `evaluation/evaluate_rag.py` qui auutomatise l'évaluation sur le jeu de test annoté
+- 19 questions/réponses
 
-- *Métriques d’évaluation* :
-    ○ Score de similarité FAISS : cosinus entre vecteur requête et chunks retrouvés. Indique si la recherche vectorielle trouve les bons documents.
-    ○ Classification manuelle : correcte / partiellement correcte / incorrecte. Une réponse est correcte si elle contient les mêmes informations que la réponse de référence.
-    ○ Taux de couverture : parmi les sources retournées, combien contiennent l'événement attendu ?
+**Métriques calculées :**
+- Note manuelle (0 à 5) pour chaque question
+- Taux d'événements attendus retrouvés
+- Couverture lexicale (=mots communs entre réponse générée et référence)
+- Détection des hallucinations (annotation manuelle)
+- Score Faiss moyen + global 
 
-- *Résultats obtenus* :
-    ○	Analyse quantitative (scores globaux) :
-    ○	Analyse qualitative (exemples de bonnes/mauvaises réponses) :
+
+### Résultats
+
+| Métrique | Résultat |
+|----------|----------|
+| Note moyenne | 4.25/5 |
+| Notes 5/5 | 12/19 |
+| Notes ≥ 3/5 | 18/19 |
+| Au moins un événement attendu retrouvé | 13/19 |
+| Réponses non vides | 19/19 |
+| Hallucinations | 0/20 |
+| Score FAISS max moyen | 0.628 |
+| Score FAISS moyen global | 0.573 |
+|
 
 ---
 
