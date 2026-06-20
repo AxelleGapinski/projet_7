@@ -155,8 +155,7 @@ python api_test.py
 
 
 ## Objectifs du projet
-POC d'un chatbot intelligent capable de répondre à des questions sur les événements culturels locaux, en s'appuyant sur un système RAG (Retrieval-Augmented Generation) combinant LangChain, FAISS et Mistral.
-> Mission : démonstration de faisabilité technique avant intégration produit.
+POC d'un chatbot capable de répondre à des questions sur les événements culturels locaux, en s'appuyant sur un système RAG combinant LangChain, FAISS et Mistral.
 
 ---
 
@@ -203,18 +202,16 @@ Réponse :
 
 ## Données
 
-**Source** : API publique Open Agenda (`public.opendatasoft.com`)
- 
+**Source** : API publique Open Agenda
 **Filtres appliqués** :
 - Département : Gironde (configurable)
 - Période : événements des 12 derniers mois + à venir
-
 **Pipeline de traitement** (`scrap_clean_embed.py`) :
  
-1. **Scraping** : récupération paginée via l'API, 100 événements par requête
+1. **Scraping** : récupération via l'API
 2. **Nettoyage** : suppression des balises HTML, conversion des caractères spéciaux, suppression des espaces multiples, dédoublonnage
 3. **Structuration** : chaque événement est mis en forme en texte concaténé (titre + date + lieu + description + mots-clés) pour l'embedding
-4. **Chunking** : les textes longs sont découpés en chunks de 500 car avec un overlap de 50 caractères (pour ne pas perdre de contexte entre deux chunks)
+4. **Chunking** : les textes longs sont découpés en chunks de 500 car avec overlap de 50 caractères 
 5. **Embedding** : chaque chunk est vectorisé avec Qwen3-Embedding-0.6B, les vecteurs sont normalisés (norme = 1)
 
 **Format de sortie** : `data/events.json` : une ligne par chunk, avec le vecteur et les métadonnées associées.
@@ -229,8 +226,8 @@ Réponse :
 | Embeddings | Qwen3-Embedding-0.6B | Gratuit, open source, multilingue|
 | LLM | mistral-small-latest | API gratuite |
 | Vectorstore | FAISS IndexFlatIP | compare la requête à tous les vecteurs (exact mais lent sur bcp d'entrées, suffisant pour un POC avec milliers d'événements) |
-| Orchestration | LangChain | Standard, facilite la piepline RAG |
-| API | FastAPI + Uvicorn | Léger, documentation Swagger automatique, validation des entrées via Pydantic |
+| Orchestration | LangChain | Standard et facilite la piepline RAG |
+| API | FastAPI + Uvicorn | documentation Swagger automatique, validation des entrées via Pydantic |
 
 ---
 
@@ -244,7 +241,7 @@ Chaque chunk est converti en `Document` LangChain (texte + métadonnées), puis 
  
 | Fichier | Contenu |
 |---------|---------|
-| `index/index.faiss` | Les vecteurs (format binaire FAISS) |
+| `index/index.faiss` | Les vecteurs |
 | `index/index.pkl` | Les Documents LangChain avec métadonnées |
  
 **Métadonnées conservées** pour chaque chunk : titre, lieu, date de début, URL, description.
@@ -305,8 +302,6 @@ Script `evaluation/evaluate_rag.py` qui auutomatise l'évaluation sur le jeu de 
     ○ Ajouter un filtre par date avant la recherche vectorielle (metadata filtering FAISS)
 
 ---
-
-## Annexes (exemples)
 ●	Extraits du jeu de test annoté
 ●	Extraits de logs ou exemples de réponse JSON
 
