@@ -264,7 +264,7 @@ Chaque chunk est converti en `Document` LangChain (texte + métadonnées), puis 
 ## Evaluation du système
 
 Script `evaluation/evaluate_rag.py` qui auutomatise l'évaluation sur le jeu de test annoté
-- 19 questions/réponses
+- 20 questions/réponses
 
 **Métriques calculées :**
 - Note manuelle (0 à 5) pour chaque question
@@ -279,10 +279,10 @@ Script `evaluation/evaluate_rag.py` qui auutomatise l'évaluation sur le jeu de 
 | Métrique | Résultat |
 |----------|----------|
 | Note moyenne | 4.25/5 |
-| Notes 5/5 | 12/19 |
-| Notes ≥ 3/5 | 18/19 |
-| Au moins un événement attendu retrouvé | 13/19 |
-| Réponses non vides | 19/19 |
+| Notes 5/5 | 12/20 |
+| Notes ≥ 3/5 | 18/20 |
+| Au moins un événement attendu retrouvé | 13/20 |
+| Réponses non vides | 20/20 |
 | Hallucinations | 0/20 |
 | Score FAISS max moyen | 0.628 |
 | Score FAISS moyen global | 0.573 |
