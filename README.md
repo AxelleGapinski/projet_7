@@ -293,18 +293,18 @@ Script `evaluation/evaluate_rag.py` qui auutomatise l'évaluation sur le jeu de 
 ## Bilan et perspectives
 
 - *Ce qui fonctionne bien* :
+   - pipeline fonctionnellle
+   - 0 hallucinations
+     
 - *Limites du POC* :
-    ○ Index statique : il faut relancer manuellement `scrap_clean_embed.py` + `index_faiss.py` quand les données changent
-    ○ Pas d'historique de conversation : chaque question est indépendante
+- 
+   - Index statique : il faut relancer manuellement `scrap_clean_embed.py` + `index_faiss.py` quand les données changent
+   - Pas d'historique de conversation : chaque question est indépendante
 
 - *Améliorations possibles* :
-    ○ Déploiement cloud (AWS Lambda ou Azure Container Apps) avec CI/CD GitHub Actions
-    ○ Ajouter un filtre par date avant la recherche vectorielle (metadata filtering FAISS)
-
----
-●	Extraits du jeu de test annoté
-●	Extraits de logs ou exemples de réponse JSON
-
+  
+   - Déploiement cloud
+   - Ajouter un filtre par date avant la recherche vectorielle (metadata filtering)
 
 ---
 
